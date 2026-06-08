@@ -321,7 +321,7 @@ void test_driver(void) {
   HAL_Delay(100);
 
   // ==== 3: Read temperature 20 times ====
-  for (unsigned int i = 0; i < 200; i++) {
+  for (unsigned int i = 0; i < 20; i++) {
     HAL_Delay(500);
 
     int16_t temp_centidegree = 0;

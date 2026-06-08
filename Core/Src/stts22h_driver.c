@@ -56,7 +56,14 @@ STTS22H_Status stts22h_configure(STTS22H_Mode mode) {
   // TODO 1: Read current "CTRL" register:
   uint8_t reg_ctrl = 0;
 
-  if(HAL_I2C_Mem_Read(&hi2c1, STTS22H_I2C_ADDR_7B << 1, STTS22H_REG_CTRL, I2C_MEMADD_SIZE_8BIT, &reg_ctrl, 1, 20) != HAL_OK) {
+  if(HAL_I2C_Mem_Read(
+    &hi2c1, 
+    STTS22H_I2C_ADDR_7B << 1, 
+    STTS22H_REG_CTRL, 
+    I2C_MEMADD_SIZE_8BIT, 
+    &reg_ctrl, 
+    1, 
+    20) != HAL_OK) {
     return STTS22H_ERROR;
   }
 
@@ -74,7 +81,13 @@ STTS22H_Status stts22h_configure(STTS22H_Mode mode) {
 
   // TODO 4: Write the new CTRL register value to sensor to apply it:
   // HINT : The STM32 HAL I2C functions expect the I2C address in 8-bit format. (addr_8bit = addr_7bit << 1)
-  if (HAL_I2C_Mem_Write(&hi2c1, STTS22H_I2C_ADDR_7B << 1, STTS22H_REG_CTRL, I2C_MEMADD_SIZE_8BIT, &reg_ctrl, 1, 20) != HAL_OK) {
+  if (HAL_I2C_Mem_Write(
+    &hi2c1, 
+    STTS22H_I2C_ADDR_7B << 1,
+     STTS22H_REG_CTRL, 
+     I2C_MEMADD_SIZE_8BIT, 
+     &reg_ctrl, 
+     1, 20) != HAL_OK) {
     return STTS22H_ERROR;
   }
 
@@ -114,6 +127,9 @@ STTS22H_Status stts22h_configure(STTS22H_Mode mode) {
     reg_ctrl &= ~(0x1 << 2);
   }
 
+  // if(mode >= STTS22H_MODE_FREERUN_25HZ && mode <= STTS22H_MODE_FREERUN_200HZ){}
+
+
 
   // TODO 8:
   // AVG:  If the freerunn mode was requested, we must set the AVG field to
@@ -134,7 +150,7 @@ STTS22H_Status stts22h_configure(STTS22H_Mode mode) {
       reg_ctrl |= (0x2 << 4);    // Set AVG to 10b
       break;
     case STTS22H_MODE_FREERUN_200HZ:
-      reg_ctrl &= ~(0x3 << 4); // Clear AVG bits
+      // reg_ctrl &= ~(0x3 << 4); // Clear AVG bits
       reg_ctrl |= (0x3 << 4);    // Set AVG to 11b
       break;
     default:
@@ -148,7 +164,14 @@ STTS22H_Status stts22h_configure(STTS22H_Mode mode) {
   reg_ctrl |= (0x1 << 3);
 
   // TODO 9: Write to sensor to apply:
-  if (HAL_I2C_Mem_Write(&hi2c1, STTS22H_I2C_ADDR_7B << 1, STTS22H_REG_CTRL, I2C_MEMADD_SIZE_8BIT, &reg_ctrl, 1, 20) != HAL_OK) {
+  if (HAL_I2C_Mem_Write(
+    &hi2c1, 
+    STTS22H_I2C_ADDR_7B << 1, 
+    STTS22H_REG_CTRL, 
+    I2C_MEMADD_SIZE_8BIT, 
+    &reg_ctrl, 
+    1, 
+    20) != HAL_OK) {
     return STTS22H_ERROR;
   }
 
@@ -162,7 +185,7 @@ STTS22H_Status stts22h_configure(STTS22H_Mode mode) {
  * @param temp_centidegree the latest temperature measurement in centi-degrees (in hundredths of a degree)
  * @return
  */
-STTS22H_Status stts22h_read_temp(int16_t *temp_centidegree) {
+STTS22H_Status stts22h_read_temp(int16_t *temp_centidegree) { // we cannot return temp hence use a pointer to store the retrieved temperature value in the variable provided by the caller.
   // TODO 1: Read "TEMP_H_OUT and TEMP_L_OUT" register:
   // HINT:   You can read sequential register with a single I2C read.
   uint8_t temp_out[2] = {0};
@@ -170,7 +193,14 @@ STTS22H_Status stts22h_read_temp(int16_t *temp_centidegree) {
   // TODO 2: Construct temp_centidegree from TEMP_H_OUT and TEMP_L_OUT registers:
   *temp_centidegree = 0;
   
-  if(HAL_I2C_Mem_Read(&hi2c1, STTS22H_I2C_ADDR_7B << 1, STTS22H_REG_TEMP_L_OUT, I2C_MEMADD_SIZE_8BIT, temp_out, 2, HAL_MAX_DELAY) != HAL_OK) {
+  if(HAL_I2C_Mem_Read(
+    &hi2c1, 
+    STTS22H_I2C_ADDR_7B << 1, 
+    STTS22H_REG_TEMP_L_OUT, 
+    I2C_MEMADD_SIZE_8BIT, 
+    temp_out, 
+    2, 
+    HAL_MAX_DELAY) != HAL_OK) {
     return STTS22H_ERROR;
   }
 
@@ -224,7 +254,7 @@ STTS22H_Status stts22h_check_is_busy(bool *is_busy) {
 
 
   // TODO 2: Extract "BUSY" bit into is_busy:
-  *is_busy= (reg_status >> 0) & 0x01;
+  *is_busy= (reg_status >> 0) & 0x01; // how is this extracting the busy bit? -> shift the status register to the right by 0 (i.e. do not shift), and then mask all bits except the least significant bit with & 0x01.
 
   return STTS22H_OK;
 }
